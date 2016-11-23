@@ -11,6 +11,9 @@ class Days
     @title = title
     @all_sessions = []
   end
+  def add_session(session)
+    @all_sessions << session
+  end
 end
 class Sessions 
   def initialize(time, title, description)
@@ -22,5 +25,5 @@ end
 
 if __FILE__ == $0
   day_1 = Days.new(DateTime.new(2016,11,01),"Day 1")
-  session_1 = Sessions.new("13:15","Object Oriented Programming 101", "Learn about everyone's favourite programming paradigm!")
+  day_1.add_session(session_1 = Sessions.new("13:15","Object Oriented Programming 101", "Learn about everyone's favourite programming paradigm!"))
 end
