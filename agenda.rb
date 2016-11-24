@@ -25,8 +25,6 @@ class Days
     @all_sessions << session
   end
   def show_sessions 
-    # TODO: option to show only session times/titles, for easier nav when editing agenda
-    # TODO: display sessions with numbers for easier selection
     all_sessions
   end
 end
@@ -49,7 +47,11 @@ if __FILE__ == $0
   day_1.add_session(Sessions.new("14:00","Test Driven Development", "Learn how to troubleshoot WHILE you code, instead of after!"))
   day_1.show_sessions.each do |session|
     puts "--------------"
-    puts session.time << " - " << session.title << "\n\n"
-    puts "• " << session.description << "\n\n"
+    puts "#{session.time} - #{session.title}\n\n"
+    puts "• #{session.description} \n\n"
+  end
+  day_1.show_sessions.each.with_index do |session, i|
+    sess_num = (i + 1).to_s
+    puts "#{sess_num}) #{session.time} - #{session.title}"
   end
 end
