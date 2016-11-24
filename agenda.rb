@@ -3,11 +3,12 @@ require 'date'
 ## Modules ##
 module Menu
   def menu
-    "Please select an option from the following menu:
-    1) Add session
-    2) Show sessions (long)
-    3) Show sessions (short)
-    Q) Quit"
+    "-----------------------------------------------
+Please select an option from the following menu:
+1) Add session
+2) Show sessions (long)
+3) Show sessions (short)
+Q) Quit"
   end
   def show
     menu
