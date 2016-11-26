@@ -8,8 +8,9 @@ Please select an option from the following menu:
 1) Add session
 2) Show sessions (long)
 3) Show sessions (short)
-4) Delete session
-5) Sort sessions by time
+4) Update Session
+5) Delete session
+6) Sort sessions by time
 Q) Quit"
   end
   def show
@@ -28,7 +29,6 @@ end
 # TODO: Add Agendas class
 # TODO: Add Speakers class
 class Days 
-  # TODO: update_session method
   # TODO: write_to_file method
   # TODO: read_from_file method
   attr_reader :all_sessions
@@ -43,6 +43,10 @@ class Days
   end
   def show_sessions 
     all_sessions
+  end
+  def update_session(number, new_sess)
+    index = Integer(number) - 1
+    all_sessions[index] = new_sess
   end
   def delete_session(number)
     index = Integer(number) - 1
@@ -75,33 +79,46 @@ if __FILE__ == $0
   include Promptable
   until ["q"].include?(user_input = prompt(show).downcase)
     case user_input
-    when "1"
+    when "1" # Add
       # TODO: Sanitize the time input. It needs to be consistent for later sorting.
       set_time = DateTime.strptime(prompt("What time is the session? (Format: HH:MM _M)"), "%I:%M %p")
       set_title = prompt("What is the session title?")
       set_description = prompt("What is the session description?")
       day_1.add_session(Sessions.new(set_time, set_title, set_description))
-    when "2"
+    when "2" # Show Long
       day_1.show_sessions.each do |session|
         time = session.time.strftime('%I:%M %p')
         puts "--------------"
         puts "#{time} - #{session.title}\n\n"
         puts "• #{session.description} \n\n"
       end
-    when "3"
+    when "3" # Show Short
       day_1.show_sessions.each.with_index do |session, i|
         time = session.time.strftime('%I:%M %p')
         sess_num = (i + 1).to_s
         puts "#{sess_num}) #{time} - #{session.title}"
       end
-    when "4"
+    when "4" # Update
+      # TODO: Add submenu to specify which part of session to update
+      day_1.show_sessions.each.with_index do |session, i|
+        time = session.time.strftime('%I:%M %p')
+        sess_num = (i + 1).to_s
+        puts "#{sess_num}) #{time} - #{session.title}"
+      end
+      sess_updating = prompt("Enter the number of the session you wish to update.")
+      set_time = DateTime.strptime(prompt("What should be the updated session time? (Format: HH:MM _M)"), "%I:%M %p")
+      set_title = prompt("What should be the updated session title?")
+      set_description = prompt("What should be the updated session description?")
+      new_sess = Sessions.new(set_time, set_title, set_description)
+      day_1.update_session(sess_updating, new_sess)
+    when "5" # Delete
       day_1.show_sessions.each.with_index do |session, i|
         time = session.time.strftime('%I:%M %p')
         sess_num = (i + 1).to_s
         puts "#{sess_num}) #{time} - #{session.title}"
       end
       day_1.delete_session(prompt("Enter the number of the session you would like to delete."))
-    when "5"
+    when "6" # Sort by Time
       day_1.sort_by_time
     else 
       puts "That is not an option."
