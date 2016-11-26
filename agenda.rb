@@ -8,7 +8,8 @@ Please select an option from the following menu:
 1) Add session
 2) Show sessions (long)
 3) Show sessions (short)
-4) Sort sessions by time
+4) Delete session
+5) Sort sessions by time
 Q) Quit"
   end
   def show
@@ -27,7 +28,6 @@ end
 # TODO: Add Agendas class
 # TODO: Add Speakers class
 class Days 
-  # TODO: delete_session method
   # TODO: update_session method
   # TODO: write_to_file method
   # TODO: read_from_file method
@@ -43,6 +43,10 @@ class Days
   end
   def show_sessions 
     all_sessions
+  end
+  def delete_session(number)
+    index = Integer(number) - 1
+    all_sessions.delete_at(index)
   end
   def sort_by_time
     all_sessions.sort! {|a, b| a.time <=> b.time}
@@ -91,6 +95,13 @@ if __FILE__ == $0
         puts "#{sess_num}) #{time} - #{session.title}"
       end
     when "4"
+      day_1.show_sessions.each.with_index do |session, i|
+        time = session.time.strftime('%I:%M %p')
+        sess_num = (i + 1).to_s
+        puts "#{sess_num}) #{time} - #{session.title}"
+      end
+      day_1.delete_session(prompt("Enter the number of the session you would like to delete."))
+    when "5"
       day_1.sort_by_time
     else 
       puts "That is not an option."
