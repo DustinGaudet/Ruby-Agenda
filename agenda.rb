@@ -24,6 +24,14 @@ module Promptable
     gets.chomp
   end
 end
+module Sanitizable
+  def sanitize(the_input) # Extremely basic, to avoid conflict between user input and delimiter
+    the_input.to_s.gsub(/:/, ":0")
+  end
+  def desanitize(the_input)
+    the_input.gsub(/:0/, ":")
+  end
+end
 
 ## Classes ##
 # TODO: Add Agendas class
@@ -58,14 +66,26 @@ class Days
 end
 class Sessions 
   # TODO: Add speakers to session
+
+  include Sanitizable
+
   attr_reader :time
   attr_reader :title
   attr_reader :description
 
   def initialize(time, title, description) 
-    @time = time
-    @title = title
-    @description = description
+    @time = sanitize(time)
+    @title = sanitize(title)
+    @description = sanitize(description)
+  end
+  def dstime
+    DateTime.parse(desanitize(time))
+  end
+  def dstitle
+    desanitize(title)
+  end
+  def dsdescription
+    desanitize(description)
   end
 end
 
@@ -77,6 +97,7 @@ if __FILE__ == $0
   day_1.add_session(Sessions.new(sample_time2, "Morning Session", "A lovely morning session."))
   include Menu
   include Promptable
+  include Sanitizable
   until ["q"].include?(user_input = prompt(show).downcase)
     case user_input
     when "1" # Add
@@ -87,23 +108,23 @@ if __FILE__ == $0
       day_1.add_session(Sessions.new(set_time, set_title, set_description))
     when "2" # Show Long
       day_1.show_sessions.each do |session|
-        time = session.time.strftime('%I:%M %p')
+        time = session.dstime.strftime('%I:%M %p')
         puts "--------------"
-        puts "#{time} - #{session.title}\n\n"
-        puts "• #{session.description} \n\n"
+        puts "#{time} - #{session.dstitle}\n\n"
+        puts "• #{session.dsdescription} \n\n"
       end
     when "3" # Show Short
       day_1.show_sessions.each.with_index do |session, i|
-        time = session.time.strftime('%I:%M %p')
+        time = session.dstime.strftime('%I:%M %p')
         sess_num = (i + 1).to_s
-        puts "#{sess_num}) #{time} - #{session.title}"
+        puts "#{sess_num}) #{time} - #{session.dstitle}"
       end
     when "4" # Update
       # TODO: Add submenu to specify which part of session to update
       day_1.show_sessions.each.with_index do |session, i|
-        time = session.time.strftime('%I:%M %p')
+        time = session.dstime.strftime('%I:%M %p')
         sess_num = (i + 1).to_s
-        puts "#{sess_num}) #{time} - #{session.title}"
+        puts "#{sess_num}) #{time} - #{session.dstitle}"
       end
       sess_updating = prompt("Enter the number of the session you wish to update.")
       set_time = DateTime.strptime(prompt("What should be the updated session time? (Format: HH:MM _M)"), "%I:%M %p")
@@ -113,9 +134,9 @@ if __FILE__ == $0
       day_1.update_session(sess_updating, new_sess)
     when "5" # Delete
       day_1.show_sessions.each.with_index do |session, i|
-        time = session.time.strftime('%I:%M %p')
+        time = session.dstime.strftime('%I:%M %p')
         sess_num = (i + 1).to_s
-        puts "#{sess_num}) #{time} - #{session.title}"
+        puts "#{sess_num}) #{time} - #{session.dstitle}"
       end
       day_1.delete_session(prompt("Enter the number of the session you would like to delete."))
     when "6" # Sort by Time
