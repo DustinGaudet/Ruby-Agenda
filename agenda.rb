@@ -11,6 +11,7 @@ Please select an option from the following menu:
 4) Update Session
 5) Delete session
 6) Sort sessions by time
+7) Write to File
 Q) Quit"
   end
   def show
@@ -37,7 +38,6 @@ end
 # TODO: Add Agendas class
 # TODO: Add Speakers class
 class Days 
-  # TODO: write_to_file method
   # TODO: read_from_file method
   attr_reader :all_sessions
 
@@ -63,6 +63,10 @@ class Days
   def sort_by_time
     all_sessions.sort! {|a, b| a.time <=> b.time}
   end
+  def write_to_file(filename)
+    machine_format_list = all_sessions.map(&:to_machine).join("\n")
+    IO.write(filename, machine_format_list)
+  end
 end
 class Sessions 
   # TODO: Add speakers to session
@@ -86,6 +90,9 @@ class Sessions
   end
   def dsdescription
     desanitize(description)
+  end
+  def to_machine()
+    "#{time}::#{title}::#{description}"
   end
 end
 
@@ -141,6 +148,8 @@ if __FILE__ == $0
       day_1.delete_session(prompt("Enter the number of the session you would like to delete."))
     when "6" # Sort by Time
       day_1.sort_by_time
+    when "7" # Write to File
+      day_1.write_to_file(prompt("Please enter the filename below. Filename will be appended with '.txt'.") << ".txt")
     else 
       puts "That is not an option."
     end  
