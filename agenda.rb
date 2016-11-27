@@ -27,7 +27,7 @@ module Promptable
   end
 end
 module Sanitizable
-  def sanitize(the_input) # Extremely basic, to avoid conflict between user input and delimiter
+  def sanitize(the_input) # Extremely basic, to avoid conflict between user input and "::" delimiter
     the_input.to_s.gsub(/:/, ":0")
   end
   def desanitize(the_input)
@@ -39,7 +39,6 @@ end
 # TODO: Add Agendas class
 # TODO: Add Speakers class
 class Days 
-  # TODO: read_from_file method
   attr_reader :all_sessions
 
   def initialize(date, title)
@@ -65,6 +64,7 @@ class Days
     all_sessions.sort! {|a, b| a.time <=> b.time}
   end
   def write_to_file(filename)
+    # TODO: Check if file exists already. Warn if it does.
     machine_format_list = all_sessions.map(&:to_machine).join("\n")
     IO.write(filename, machine_format_list)
   end
@@ -156,7 +156,7 @@ if __FILE__ == $0
       day_1.sort_by_time
     when "7" # Write to File
       day_1.write_to_file(prompt("Please enter the filename below. Filename will be appended with '.txt'.") + ".txt")
-    when "8" # Read from File
+    when "8" # Load from File
       if prompt("Loading from file will erase this day's current sessions. Continue? [y/n]").downcase == "y"
         day_1.load_from_file(prompt("Please enter the filename, without extension, below.") + ".txt")
       else
