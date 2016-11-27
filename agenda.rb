@@ -12,6 +12,7 @@ Please select an option from the following menu:
 5) Delete session
 6) Sort sessions by time
 7) Write to File
+8) Read from File
 Q) Quit"
   end
   def show
@@ -66,6 +67,16 @@ class Days
   def write_to_file(filename)
     machine_format_list = all_sessions.map(&:to_machine).join("\n")
     IO.write(filename, machine_format_list)
+  end
+  def load_from_file(filename)
+    all_sessions.clear
+    IO.readlines(filename).each do |line|
+      sess_data = line.split('::')
+      sess_time = sess_data[0]
+      sess_title = sess_data[1]
+      sess_descr = sess_data[2]
+      add_session(Sessions.new(sess_time, sess_title, sess_descr, true))
+    end
   end
 end
 class Sessions 
@@ -145,6 +156,12 @@ if __FILE__ == $0
       day_1.sort_by_time
     when "7" # Write to File
       day_1.write_to_file(prompt("Please enter the filename below. Filename will be appended with '.txt'.") + ".txt")
+    when "8" # Read from File
+      if prompt("Loading from file will erase this day's current sessions. Continue? [y/n]").downcase == "y"
+        day_1.load_from_file(prompt("Please enter the filename, without extension, below.") + ".txt")
+      else
+        puts "File was not loaded."
+      end
     else 
       puts "That is not an option."
     end  
