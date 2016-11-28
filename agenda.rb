@@ -101,6 +101,19 @@ class Sessions
     "#{sn_time}::#{sn_title}::#{sn_descr}"
   end
 end
+class Speakers
+  attr_reader :name
+  attr_reader :tag
+  attr_reader :job_title
+  attr_reader :company
+
+  def initialize(name, job_title, company, tag)
+    @name = name
+    @job_title = job_title
+    @company = company
+    @tag = tag
+  end
+end
 
 if __FILE__ == $0
   day_1 = Days.new(DateTime.new(2016,11,01),"Day 1")
