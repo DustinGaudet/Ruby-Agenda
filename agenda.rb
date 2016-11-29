@@ -9,10 +9,11 @@ Please select an option from the following menu:
 2) Show sessions (long)
 3) Show sessions (short)
 4) Update Session
-5) Delete session
-6) Sort sessions by time
-7) Write to File
-8) Read from File
+5) Add speaker to session
+6) Delete session
+7) Sort sessions by time
+8) Write to File
+9) Read from File
 Q) Quit"
   end
   def show
@@ -87,11 +88,17 @@ class Sessions
   attr_reader :time
   attr_reader :title
   attr_reader :description
+  attr_reader :all_speakers
 
   def initialize(time, title, description, from_file = false) 
     @time = from_file ? DateTime.iso8601(desanitize(time)) : DateTime.strptime(time, "%I:%M %p")
     @title = from_file ? desanitize(title) : title
     @description = from_file ? desanitize(description) : description
+    @all_speakers = []
+  end
+
+  def add_speaker(speaker)
+    all_speakers << speaker
   end
   
   def to_machine
@@ -158,18 +165,34 @@ if __FILE__ == $0
       set_description = prompt("What should be the updated session description?")
       new_sess = Sessions.new(set_time, set_title, set_description)
       day_1.update_session(sess_updating, new_sess)
-    when "5" # Delete
+    when "5" # Add Speaker
+      day_1.show_sessions.each.with_index do |session, i|
+        time = session.time.strftime('%I:%M %p')
+        sess_num = (i + 1).to_s
+        puts "#{sess_num}) #{time} - #{session.title}"
+      end
+      sess_num = Integer(prompt("Please select a session to add the speaker to.")) - 1 
+      spkr_name = prompt("Please enter the speaker's full name.")
+      spkr_title = prompt("Please enter the speaker's job title.")
+      spkr_company = prompt("Please enter the speaker's company name.")
+      spkr_tag = ""
+      if ['y'].include?(prompt("Do you want to add a special tag? [y/n]").downcase)
+        spkr_tag << prompt("What would you like the tag to say?")
+      end
+      day_1.all_sessions[sess_num].add_speaker(Speakers.new(spkr_name, spkr_title, spkr_company, spkr_tag))
+      puts "#{spkr_name} added to session #{sess_num} successfully!"
+    when "6" # Delete
       day_1.show_sessions.each.with_index do |session, i|
         time = session.time.strftime('%I:%M %p')
         sess_num = (i + 1).to_s
         puts "#{sess_num}) #{time} - #{session.title}"
       end
       day_1.delete_session(prompt("Enter the number of the session you would like to delete."))
-    when "6" # Sort by Time
+    when "7" # Sort by Time
       day_1.sort_by_time
-    when "7" # Write to File
+    when "8" # Write to File
       day_1.write_to_file(prompt("Please enter the filename below. Filename will be appended with '.txt'.") + ".txt")
-    when "8" # Load from File
+    when "9" # Load from File
       if prompt("Loading from file will erase this day's current sessions. Continue? [y/n]").downcase == "y"
         day_1.load_from_file(prompt("Please enter the filename, without extension, below.") + ".txt")
       else
