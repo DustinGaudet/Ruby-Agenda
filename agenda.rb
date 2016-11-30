@@ -145,6 +145,11 @@ if __FILE__ == $0
         puts "--------------"
         puts "#{time} - #{session.title}\n\n"
         puts "• #{session.description} \n\n"
+        session.all_speakers.each do |speaker|
+          puts "| #{speaker.name} [#{speaker.tag}]"
+          puts "| #{speaker.job_title}"
+          puts "| #{speaker.company}\n\n"
+        end
       end
     when "3" # Show Short
       day_1.show_sessions.each.with_index do |session, i|
@@ -166,6 +171,7 @@ if __FILE__ == $0
       new_sess = Sessions.new(set_time, set_title, set_description)
       day_1.update_session(sess_updating, new_sess)
     when "5" # Add Speaker
+      # TODO: Prevent the program from crashing when input not an integer
       day_1.show_sessions.each.with_index do |session, i|
         time = session.time.strftime('%I:%M %p')
         sess_num = (i + 1).to_s
